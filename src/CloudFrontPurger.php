@@ -3,7 +3,7 @@
  * @copyright Copyright (c) PutYourLightsOn
  */
 
-namespace putyourlightson\blitzcloudfront;
+namespace levinriegner\blitzcloudfront;
 
 use Aws\CloudFront\CloudFrontClient;
 use Aws\Exception\AwsException;
@@ -71,7 +71,7 @@ class CloudFrontPurger extends BaseCachePurger
      */
     public static function displayName(): string
     {
-        return Craft::t('blitz', 'CloudFront Purger');
+        return Craft::t('blitz', 'CloudFront Purger L+R');
     }
 
     // Public Methods
@@ -210,18 +210,26 @@ class CloudFrontPurger extends BaseCachePurger
     {
         $result = '';
 
-        $client = new CloudFrontClient([
+        $apiKey = Craft::parseEnv($this->apiKey);
+        $apiSecret = Craft::parseEnv($this->apiSecret);
+
+        $clientConfig = [
             'version' => $this->_version,
             'region' => self::REGION,
-            'credentials' => [
-                'key' => Craft::parseEnv($this->apiKey),
-                'secret' => Craft::parseEnv($this->apiSecret),
-            ],
-        ]);
+        ];
+
+        if(!empty($apiKey) && !empty($apiSecret) ){
+            $clientConfig['credentials'] = [
+                'key' => $apiKey,
+                'secret' => $apiSecret,
+            ];
+        }
+
+        $client = new CloudFrontClient($clientConfig);
 
         try {
             $result = $client->createInvalidation([
-                'DistributionId' => $this->distributionId,
+                'DistributionId' => Craft::parseEnv($this->distributionId),
                 'InvalidationBatch' => [
                     'CallerReference' => time(),
                     'Paths' => [
@@ -231,7 +239,7 @@ class CloudFrontPurger extends BaseCachePurger
                 ]
             ]);
         }
-        catch (AwsException $e) { }
+        catch (AwsException $e) { Craft::warning($e->getMessage()); }
 
         return $result;
     }

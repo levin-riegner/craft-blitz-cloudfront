@@ -1,5 +1,5 @@
 {
-    "name": "putyourlightson/craft-blitz-cloudfront",
+    "name": "levin-riegner/craft-blitz-cloudfront",
     "description": "CloudFront cache purger for the Blitz plugin for Craft CMS.",
     "version": "2.0.3",
     "type": "blitz-purger",
@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-          "putyourlightson\\blitzcloudfront\\": "src/"
+          "levinriegner\\blitzcloudfront\\": "src/"
         }
     },
     "support": {
